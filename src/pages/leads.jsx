@@ -1,137 +1,151 @@
-import React, { useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
+import Header from '../components/Header'
+import {getLeads } from '../api/leads'
 import { 
-  Search, 
-  Upload, 
-  UserPlus, 
-  Bell, 
-  User,
   Calendar,
   Filter,
   Tag,
-  ChevronDown,
   Phone,
-  Mail,
   MoreHorizontal
 } from 'lucide-react'
-import Header from '../components/Header'
 
 const Leads = () => {
+  const [LeadsData, setLeadsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+
   const [selectedDate, setSelectedDate] = useState('Last 3 Month')
   const [selectedSource, setSelectedSource] = useState('All Sources')
   const [selectedLabel, setSelectedLabel] = useState('All Labels')
 
-  const leadsData = [
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      company: 'TechCorp Inc',
-      email: 'sarah.johnson@techcorp.com',
-      phone: '+1 (555) 123-4567',
-      source: 'LinkedIn',
-      jobTitle: 'Senior Software Engineer',
-      aiScore: { label: 'Hot', percentage: 85, color: 'bg-red-100 text-red-800' },
-      tags: ['React', 'TypeScript', '+1'],
-      status: 'Qualified',
-      nextFollowup: 'Dec 19, 3:30 PM',
-      avatar: 'SJ'
-    },
-    {
-      id: 2,
-      name: 'Michael Chen',
-      company: 'StartupXYZ',
-      email: 'mchen@startupxyz.com',
-      phone: '+1 (555) 987-6543',
-      source: 'Cold Email',
-      jobTitle: 'Product Manager',
-      aiScore: { label: 'Warm', percentage: 65, color: 'bg-orange-100 text-orange-800' },
-      tags: ['Product', 'Startup', '+1'],
-      status: 'Contacted',
-      nextFollowup: 'Dec 22, 10:00 AM',
-      avatar: 'MC'
-    },
-    {
-      id: 3,
-      name: 'Emily Rodriguez',
-      company: 'Design Studio Pro',
-      email: 'emily.r@designstudio.com',
-      phone: '+1 (555) 456-7890',
-      source: 'Manual',
-      jobTitle: 'UX Designer',
-      aiScore: { label: 'Cold', percentage: 35, color: 'bg-blue-100 text-blue-800' },
-      tags: ['Design', 'UX', '+1'],
-      status: 'New',
-      nextFollowup: 'Dec 20, 2:00 PM',
-      avatar: 'ER'
-    },
-    {
-      id: 4,
-      name: 'David Kim',
-      company: 'Independent Consultant',
-      email: 'david.kim@consultant.com',
-      phone: '+1 (555) 321-0987',
-      source: 'Cold Phone',
-      jobTitle: 'DevOps Engineer',
-      aiScore: { label: 'Hot', percentage: 78, color: 'bg-red-100 text-red-800' },
-      tags: ['DevOps', 'AWS', '+1'],
-      status: 'New',
-      nextFollowup: 'Dec 20, 2:00 PM',
-      avatar: 'DK'
-    },
-    {
-      id: 5,
-      name: 'Lisa Wang',
-      company: 'BigCorp Industries',
-      email: 'lisa.wang@bigcorp.com',
-      phone: '+1 (555) 654-3210',
-      source: 'LinkedIn',
-      jobTitle: 'Data Scientist',
-      aiScore: { label: 'Unscored', percentage: null, color: 'bg-gray-100 text-gray-800' },
-      tags: ['Data Science', 'Python', '+1'],
-      status: 'New',
-      nextFollowup: 'Dec 20, 2:00 PM',
-      avatar: 'LW'
-    },
-
-    {
-      id: 6,
-      name: 'Askh Jain',  
-      company: 'Dynamics',
-      email: 'askh.jain@bigcorp.com',
-      phone: '+1 (555) 654-3210',
-      source: 'LinkedIn',
-      jobTitle: 'Product Manager',
-      aiScore: { label: 'Unscored', percentage: null, color: 'bg-gray-100 text-gray-800' },
-      tags: ['Product', 'Startup', '+1'],
-      status: 'New',
-      nextFollowup: 'Dec 20, 2:00 PM',
-      avatar: 'AJ'
-    },
-
-    {
-      id: 7,
-      name: 'Rajesh Kumar',  
-      company: 'Dynamics Inc',
-      email: 'rajesh.kumar@bigcorp.com',
-      phone: '+1 (555) 654-3210',
-      source: 'LinkedIn',
-      jobTitle: 'Product Manager',
-      aiScore: { label: 'Unscored', percentage: null, color: 'bg-gray-100 text-gray-800' },
-      tags: ['Product', 'Startup', '+1'],
-      status: 'New',
-      nextFollowup: 'Dec 20, 2:00 PM',
-      avatar: 'RK'
+  useEffect(()=>{
+    const fetchLeads = async()=>{
+      try {
+       const data = await getLeads(); 
+       setLeadsData(data);
+      } catch (err) {
+        console.log(`Error fetching leads: ${err}`)
+      }finally{
+        setLoading(false);
+      }
     }
-  ]
+    fetchLeads();
+    setLoading(false);
+  },[])
+
+  // const leadsData = [
+  //   {
+  //     id: 1,
+  //     name: 'Sarah Johnson',
+  //     company: 'TechCorp Inc',
+  //     email: 'sarah.johnson@techcorp.com',
+  //     phone: '+1 (555) 123-4567',
+  //     source: 'LinkedIn',
+  //     jobTitle: 'Senior Software Engineer',
+  //     aiScore: { label: 'Hot', percentage: 85, color: 'bg-red-100 text-red-800' },
+  //     tags: ['React', 'TypeScript', '+1'],
+  //     status: 'Qualified',
+  //     nextFollowup: 'Dec 19, 3:30 PM',
+  //     avatar: 'SJ'
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'Michael Chen',
+  //     company: 'StartupXYZ',
+  //     email: 'mchen@startupxyz.com',
+  //     phone: '+1 (555) 987-6543',
+  //     source: 'Cold Email',
+  //     jobTitle: 'Product Manager',
+  //     aiScore: { label: 'Warm', percentage: 65, color: 'bg-orange-100 text-orange-800' },
+  //     tags: ['Product', 'Startup', '+1'],
+  //     status: 'Contacted',
+  //     nextFollowup: 'Dec 22, 10:00 AM',
+  //     avatar: 'MC'
+  //   },
+  //   {
+  //     id: 3,
+  //     name: 'Emily Rodriguez',
+  //     company: 'Design Studio Pro',
+  //     email: 'emily.r@designstudio.com',
+  //     phone: '+1 (555) 456-7890',
+  //     source: 'Manual',
+  //     jobTitle: 'UX Designer',
+  //     aiScore: { label: 'Cold', percentage: 35, color: 'bg-blue-100 text-blue-800' },
+  //     tags: ['Design', 'UX', '+1'],
+  //     status: 'New',
+  //     nextFollowup: 'Dec 20, 2:00 PM',
+  //     avatar: 'ER'
+  //   },
+  //   {
+  //     id: 4,
+  //     name: 'David Kim',
+  //     company: 'Independent Consultant',
+  //     email: 'david.kim@consultant.com',
+  //     phone: '+1 (555) 321-0987',
+  //     source: 'Cold Phone',
+  //     jobTitle: 'DevOps Engineer',
+  //     aiScore: { label: 'Hot', percentage: 78, color: 'bg-red-100 text-red-800' },
+  //     tags: ['DevOps', 'AWS', '+1'],
+  //     status: 'New',
+  //     nextFollowup: 'Dec 20, 2:00 PM',
+  //     avatar: 'DK'
+  //   },
+  //   {
+  //     id: 5,
+  //     name: 'Lisa Wang',
+  //     company: 'BigCorp Industries',
+  //     email: 'lisa.wang@bigcorp.com',
+  //     phone: '+1 (555) 654-3210',
+  //     source: 'LinkedIn',
+  //     jobTitle: 'Data Scientist',
+  //     aiScore: { label: 'Unscored', percentage: null, color: 'bg-gray-100 text-gray-800' },
+  //     tags: ['Data Science', 'Python', '+1'],
+  //     status: 'New',
+  //     nextFollowup: 'Dec 20, 2:00 PM',
+  //     avatar: 'LW'
+  //   },
+
+  //   {
+  //     id: 6,
+  //     name: 'Askh Jain',  
+  //     company: 'Dynamics',
+  //     email: 'askh.jain@bigcorp.com',
+  //     phone: '+1 (555) 654-3210',
+  //     source: 'LinkedIn',
+  //     jobTitle: 'Product Manager',
+  //     aiScore: { label: 'Unscored', percentage: null, color: 'bg-gray-100 text-gray-800' },
+  //     tags: ['Product', 'Startup', '+1'],
+  //     status: 'New',
+  //     nextFollowup: 'Dec 20, 2:00 PM',
+  //     avatar: 'AJ'
+  //   },
+
+  //   {
+  //     id: 7,
+  //     name: 'Rajesh Kumar',  
+  //     company: 'Dynamics Inc',
+  //     email: 'rajesh.kumar@bigcorp.com',
+  //     phone: '+1 (555) 654-3210',
+  //     source: 'LinkedIn',
+  //     jobTitle: 'Product Manager',
+  //     aiScore: { label: 'Unscored', percentage: null, color: 'bg-gray-100 text-gray-800' },
+  //     tags: ['Product', 'Startup', '+1'],
+  //     status: 'New',
+  //     nextFollowup: 'Dec 20, 2:00 PM',
+  //     avatar: 'RK'
+  //   }
+  // ]
 
   const getStatusColor = (status) => {
     switch (status) {
       case 'Qualified': return 'bg-green-100 text-green-800'
       case 'Contacted': return 'bg-blue-100 text-blue-800'
-      case 'New': return 'bg-gray-100 text-gray-800'
+      case 'New': return 'bg-orange-100 text-orang-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
 
+  if (loading) return <div className='p-6 text-center'>Loading Leads...</div>
   return (
     <>
     <div className='h-full'>
@@ -142,7 +156,7 @@ const Leads = () => {
       <main className='p-4 no-scrollbar sm:p-6 lg:p-8'>
         {/* Leads Section Header */}
         <div className='mb-6 '>
-          <h2 className='text-2xl font-bold text-gray-900 mb-4'>Leads ({leadsData.length})</h2>
+          <h2 className='text-2xl font-bold text-gray-900 mb-4'>Leads ({LeadsData.length})</h2>
           
           {/* Filter Dropdowns */}
           <div className='flex flex-wrap gap-4 mb-6'>
@@ -209,15 +223,15 @@ const Leads = () => {
                 </tr>
               </thead>
               <tbody className='bg-white divide-y divide-gray-200'>
-                {leadsData.map((lead) => (
+                {LeadsData.map((lead) => (
                   <tr key={lead.id} className='hover:bg-gray-50 transition-colors'>
                     <td className='px-6 py-4 whitespace-nowrap'>
                       <div className='flex items-center'>
                         <div className='w-10 h-10 bg-teal-600 rounded-full flex items-center justify-center text-white font-semibold text-sm'>
-                          {lead.avatar}
+                          {lead.firstName[0]}{[][lead.lastName[0]]}
                         </div>
                         <div className='ml-4'>
-                          <div className='text-sm font-medium text-gray-900'>{lead.name}</div>
+                          <div className='text-sm font-medium text-gray-900'>{lead.firstName}{lead.lastName}</div>
                           <div className='text-sm text-gray-500'>{lead.company}</div>
                         </div>
                       </div>
@@ -237,13 +251,13 @@ const Leads = () => {
                     </td>
                     <td className='px-6 py-4 whitespace-nowrap'>
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${lead.aiScore.color}`}>
-                        {lead.aiScore.label} {lead.aiScore.percentage && `(${lead.aiScore.percentage}%)`}
+                        {lead.aiScore?.label} {lead.aiScore?.percentage ?   `(${lead.aiScore.percentage}%)` : ''}
                       </span>
                     </td>
                     <td className='px-6 py-4 whitespace-nowrap'>
                       <div className='flex flex-wrap gap-1'>
                         {lead.tags.map((tag, index) => (
-                          <span key={index} className='inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full'>
+                          <span key={index} className='inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-teal-800 rounded-full'>
                             {tag}
                           </span>
                         ))}

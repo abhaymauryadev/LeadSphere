@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 import Sidebar from '../components/Sidebar'
 import { Download, Save } from 'lucide-react'
+import { createLead } from '../api/leads';
 
 const AddLead = () => {
   const [activeTab, setActiveTab] = useState('manual')
@@ -90,11 +91,29 @@ const AddLead = () => {
     window.URL.revokeObjectURL(url)
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log('Form submitted:', formData)
-    // Handle form submission here
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const savedLead = await createLead(formData);
+    alert(`Lead saved: ${savedLead.firstName} ${savedLead.lastName}`);
+    // Reset form
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      company: '',
+      jobTitle: '',
+      source: '',
+      tags: [],
+      notes: ''
+    });
+  } catch (err) {
+    console.error('Error saving lead:', err);
+    alert('Failed to save lead');
   }
+};
+
 
   const handleSaveAndScore = () => {
     console.log('Save and Score:', formData)
@@ -268,13 +287,13 @@ const AddLead = () => {
                     {formData.tags.map((tag, index) => (
                       <span
                         key={index}
-                        className='inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800'
+                        className='inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-teal-800'
                       >
                         {tag}
                         <button
                           type='button'
                           onClick={() => handleRemoveTag(tag)}
-                          className='ml-2 text-blue-600 hover:text-blue-800'
+                          className='ml-2 text-teal-600 hover:text-teal-800'
                         >
                           ×
                         </button>
@@ -287,6 +306,7 @@ const AddLead = () => {
                       value={newTag}
                       onChange={(e) => setNewTag(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
                       className='flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                       placeholder='Add a tag...'
                     />

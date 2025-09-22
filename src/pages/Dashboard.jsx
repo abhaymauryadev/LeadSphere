@@ -1,19 +1,57 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { getDashboardStats } from '../api/dashboard'
+import Header from '../components/Header'
+import {Pie, Line} from 'react-chartjs-2'
+ChartJS.register(ArcElement, Tooltip, Legend);
+import {
+  Chart as ChartJS,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from 'chart.js';
 import { 
-  ArrowLeft, 
-  Search, 
-  Upload, 
-  UserPlus, 
-  Bell, 
-  User,
   Users,
   Flame,
   TrendingUp,
   Plus,
 } from 'lucide-react'
-import Header from '../components/Header'
+
 
 const Dashboard = () => {
+  const [stats, setStats] = useState(null);
+
+  useEffect(()=>{
+    const fetchStats = async()=>{
+      try {
+        const data = await getDashboardStats();
+        setStats(data);
+
+      } catch (err) {
+        console.log('Error Fetching Dashboard stats:', err);
+      }
+    };
+    fetchStats();
+  })
+
+  if(!stats) return <div className='p-6'>Loadind dashboard...</div>
+
+  const COLORS = ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff'];
+
+  // Pie chart data (Leads by Source)
+  const pieData = {
+    labels : stats?.leadsBySource?.map(item => item._id),
+    datasets:[
+      {
+        data:stats.sourceCounts.map(item=>item.count),
+        backgroundColor:COLORS,
+        hoverOffset:6,
+        borderWidth:1
+      },
+    ],
+  };
+
+  
+
   return (
     <div className='h-full'>
         {/* Header */}
@@ -28,7 +66,7 @@ const Dashboard = () => {
               <div className='flex items-center justify-between'>
                 <div className='flex-1 min-w-0'>
                   <p className='text-gray-600 text-xs sm:text-sm font-medium'>Total Leads</p>
-                  <p className='text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mt-1 sm:mt-2'>247</p>
+                  <p className='text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mt-1 sm:mt-2'>{stats.totalLeads}</p>
                   <p className='text-gray-500 text-xs sm:text-sm mt-1'>Last 3 months</p>
                 </div>
                 <div className='p-2 sm:p-3 bg-blue-100 rounded-lg ml-2 sm:ml-4 flex-shrink-0'>
@@ -42,7 +80,7 @@ const Dashboard = () => {
               <div className='flex items-center justify-between'>
                 <div className='flex-1 min-w-0'>
                   <p className='text-gray-600 text-xs sm:text-sm font-medium'>Hot Prospects</p>
-                  <p className='text-xl sm:text-2xl lg:text-3xl font-bold text-red-600 mt-1 sm:mt-2'>42</p>
+                  <p className='text-xl sm:text-2xl lg:text-3xl font-bold text-red-600 mt-1 sm:mt-2'>{stats.aiScoreCounts.find(item => item._id === 'Hot')?.count || 0}</p>
                   <p className='text-gray-500 text-xs sm:text-sm mt-1'>High priority leads</p>
                 </div>
                 <div className='p-2 sm:p-3 bg-red-100 rounded-lg ml-2 sm:ml-4 flex-shrink-0'>
@@ -56,7 +94,7 @@ const Dashboard = () => {
               <div className='flex items-center justify-between'>
                 <div className='flex-1 min-w-0'>
                   <p className='text-gray-600 text-xs sm:text-sm font-medium'>Warm Leads</p>
-                  <p className='text-xl sm:text-2xl lg:text-3xl font-bold text-orange-600 mt-1 sm:mt-2'>89</p>
+                  <p className='text-xl sm:text-2xl lg:text-3xl font-bold text-orange-600 mt-1 sm:mt-2'>{stats.aiScoreCounts.find(item => item._id === 'Warm')?.count || 0}</p>
                   <p className='text-gray-500 text-xs sm:text-sm mt-1'>Medium priority</p>
                 </div>
                 <div className='p-2 sm:p-3 bg-orange-100 rounded-lg ml-2 sm:ml-4 flex-shrink-0'>
@@ -102,7 +140,7 @@ const Dashboard = () => {
             {/* Lead Sources */}
             <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6'>
               <h3 className='text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4'>Lead Sources</h3>
-              <div className='space-y-2 sm:space-y-3'>
+              {/* <div className='space-y-2 sm:space-y-3'>
                 <div className='flex items-center justify-between'>
                   <div className='flex items-center space-x-2'>
                     <div className='w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full flex-shrink-0'></div>
@@ -131,13 +169,16 @@ const Dashboard = () => {
                   </div>
                   <span className='text-xs sm:text-sm font-medium text-gray-900'>10%</span>
                 </div>
+              </div> */}
+              <div className='space-y-2 sm:space-y-3'>
+                <Pie data = {pieData}/>
               </div>
             </div>
 
             {/* Lead Timeline */}
             <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6'>
               <h3 className='text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4'>Lead Timeline</h3>
-              <div className='h-24 sm:h-32 flex items-end justify-between space-x-1 sm:space-x-2'>
+              {/* <div className='h-24 sm:h-32 flex items-end justify-between space-x-1 sm:space-x-2'>
                 <div className='flex flex-col items-center space-y-1 sm:space-y-2'>
                   <div className='w-6 sm:w-8 bg-teal-500 rounded-t' style={{height: '45%'}}></div>
                   <span className='text-xs text-gray-500'>Sep</span>
@@ -154,6 +195,9 @@ const Dashboard = () => {
                   <div className='w-6 sm:w-8 bg-teal-500 rounded-t' style={{height: '90%'}}></div>
                   <span className='text-xs text-gray-500'>Dec</span>
                 </div>
+              </div> */}
+               <div className='space-y-2 sm:space-y-3'>
+                {/* <Line data = {pieData}/> */}
               </div>
             </div>
 
