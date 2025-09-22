@@ -4,7 +4,7 @@ import Dashboard from './pages/Dashboard'
 import Leads from './pages/leads'
 import AddLead from './pages/AddLead'
 import AiAssistant from './pages/AiAssistant'
-import Followups from './pages/Followups'
+import Followups from './pages/Reminders'
 import Reports from './pages/Reports'
 import Settings from './pages/Settings'
 
@@ -13,7 +13,7 @@ function App() {
     <Router>
       <div className='flex h-screen bg-gray-50'>
         <Sidebar />
-        <main className='flex-1 ml-64'>
+        <main className='flex-1 lg:ml-16 transition-all duration-300'>
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />

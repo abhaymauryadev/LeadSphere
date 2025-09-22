@@ -1,15 +1,15 @@
 import React from 'react'
 import Sidebar from '../components/Sidebar'
-const Followups = () => {
+const Reminders = () => {
   return (
     <>
     <Sidebar/>
     <div>
-      <h1>Followups</h1>
+      <h1>Reminders</h1>
     </div>
     </>
    
   )
 }
 
-export default Followups
+export default Reminders
