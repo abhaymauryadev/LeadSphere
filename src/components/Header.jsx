@@ -6,15 +6,12 @@ import {
     UserPlus, 
     Bell, 
     User,
-    Users,
-    Flame,
-    TrendingUp,
-    Plus,
   } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const Header = () => {
   return (
-    <header className='bg-white shadow-sm border-b border-gray-200 px-4 sm:px-6 py-4 h-auto sm:h-[5.5625rem]'>
+    <header className='bg-white shadow-sm border-b border-gray-200 px-4 sm:px-6 py-4 h-auto sm:h-[5.5625rem]  sticky top-0 z-10'>
           <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0'>
             <div className='flex items-center space-x-4'>              
            <div className='flex flex-col pl-20 lg:pl-0'>
@@ -43,7 +40,11 @@ const Header = () => {
                 
                 <button className='flex items-center space-x-2 px-3 sm:px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors'>
                   <UserPlus size={16} />
-                  <span className='hidden sm:inline'>Add Lead</span>
+                  <span className='hidden sm:inline'>
+                    <Link to="/add-lead">
+                    Add Lead
+                    </Link>
+                    </span>
                 </button>
                 
                 <button className='p-2 text-gray-500 hover:text-gray-700 transition-colors'>

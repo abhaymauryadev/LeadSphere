@@ -38,7 +38,7 @@ const Dashboard = () => {
             </div>
 
             {/* Hot Prospects */}
-            <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6'>
+            <div className='bg-white  rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6'>
               <div className='flex items-center justify-between'>
                 <div className='flex-1 min-w-0'>
                   <p className='text-gray-600 text-xs sm:text-sm font-medium'>Hot Prospects</p>

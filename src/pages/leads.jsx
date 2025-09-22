@@ -105,6 +105,21 @@ const Leads = () => {
       status: 'New',
       nextFollowup: 'Dec 20, 2:00 PM',
       avatar: 'AJ'
+    },
+
+    {
+      id: 7,
+      name: 'Rajesh Kumar',  
+      company: 'Dynamics Inc',
+      email: 'rajesh.kumar@bigcorp.com',
+      phone: '+1 (555) 654-3210',
+      source: 'LinkedIn',
+      jobTitle: 'Product Manager',
+      aiScore: { label: 'Unscored', percentage: null, color: 'bg-gray-100 text-gray-800' },
+      tags: ['Product', 'Startup', '+1'],
+      status: 'New',
+      nextFollowup: 'Dec 20, 2:00 PM',
+      avatar: 'RK'
     }
   ]
 
@@ -124,7 +139,7 @@ const Leads = () => {
       <Header/>
 
       {/* Main Content */}
-      <main className='p-4 sm:p-6'>
+      <main className='p-4 no-scrollbar sm:p-6 lg:p-8'>
         {/* Leads Section Header */}
         <div className='mb-6 '>
           <h2 className='text-2xl font-bold text-gray-900 mb-4'>Leads ({leadsData.length})</h2>
