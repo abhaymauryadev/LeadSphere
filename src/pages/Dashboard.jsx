@@ -2,19 +2,38 @@ import React, { useEffect, useState } from 'react'
 import { getDashboardStats } from '../api/dashboard'
 import Header from '../components/Header'
 import {Pie, Line} from 'react-chartjs-2'
-ChartJS.register(ArcElement, Tooltip, Legend);
-import {
-  Chart as ChartJS,
-  Tooltip,
-  Legend,
-  ArcElement,
-} from 'chart.js';
 import { 
   Users,
   Flame,
   TrendingUp,
   Plus,
 } from 'lucide-react'
+
+import {
+  Chart as ChartJS,
+  ArcElement,
+  CategoryScale,   // x-axis
+  LinearScale,     // y-axis
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+
+ChartJS.register(ArcElement,
+   ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+
 
 
 const Dashboard = () => {
@@ -31,7 +50,7 @@ const Dashboard = () => {
       }
     };
     fetchStats();
-  })
+  }, [])
 
   if(!stats) return <div className='p-6'>Loadind dashboard...</div>
 
@@ -50,7 +69,20 @@ const Dashboard = () => {
     ],
   };
 
-  
+  // Line chart data (Leads by Source)
+  const lineData = {
+    labels: stats.leadsTimeline.map(item => item._id),
+    datasets:[
+      {
+        label: 'Leads Created',
+        data: stats.leadsTimeline.map(item => item.count),
+        borderColor:'#36a2eb',
+        backgroundColor:'rgba(54,162,235,0.3)',
+        fill:true,
+        tension:0.3,
+      },
+    ],
+  };
 
   return (
     <div className='h-full'>
@@ -140,36 +172,6 @@ const Dashboard = () => {
             {/* Lead Sources */}
             <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6'>
               <h3 className='text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4'>Lead Sources</h3>
-              {/* <div className='space-y-2 sm:space-y-3'>
-                <div className='flex items-center justify-between'>
-                  <div className='flex items-center space-x-2'>
-                    <div className='w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full flex-shrink-0'></div>
-                    <span className='text-xs sm:text-sm text-gray-600'>Email</span>
-                  </div>
-                  <span className='text-xs sm:text-sm font-medium text-gray-900'>30%</span>
-                </div>
-                <div className='flex items-center justify-between'>
-                  <div className='flex items-center space-x-2'>
-                    <div className='w-2 h-2 sm:w-3 sm:h-3 bg-teal-600 rounded-full flex-shrink-0'></div>
-                    <span className='text-xs sm:text-sm text-gray-600'>LinkedIn</span>
-                  </div>
-                  <span className='text-xs sm:text-sm font-medium text-gray-900'>40%</span>
-                </div>
-                <div className='flex items-center justify-between'>
-                  <div className='flex items-center space-x-2'>
-                    <div className='w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full flex-shrink-0'></div>
-                    <span className='text-xs sm:text-sm text-gray-600'>Cold Phone</span>
-                  </div>
-                  <span className='text-xs sm:text-sm font-medium text-gray-900'>20%</span>
-                </div>
-                <div className='flex items-center justify-between'>
-                  <div className='flex items-center space-x-2'>
-                    <div className='w-2 h-2 sm:w-3 sm:h-3 bg-orange-500 rounded-full flex-shrink-0'></div>
-                    <span className='text-xs sm:text-sm text-gray-600'>Manual</span>
-                  </div>
-                  <span className='text-xs sm:text-sm font-medium text-gray-900'>10%</span>
-                </div>
-              </div> */}
               <div className='space-y-2 sm:space-y-3'>
                 <Pie data = {pieData}/>
               </div>
@@ -178,33 +180,15 @@ const Dashboard = () => {
             {/* Lead Timeline */}
             <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6'>
               <h3 className='text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4'>Lead Timeline</h3>
-              {/* <div className='h-24 sm:h-32 flex items-end justify-between space-x-1 sm:space-x-2'>
-                <div className='flex flex-col items-center space-y-1 sm:space-y-2'>
-                  <div className='w-6 sm:w-8 bg-teal-500 rounded-t' style={{height: '45%'}}></div>
-                  <span className='text-xs text-gray-500'>Sep</span>
-                </div>
-                <div className='flex flex-col items-center space-y-1 sm:space-y-2'>
-                  <div className='w-6 sm:w-8 bg-teal-500 rounded-t' style={{height: '75%'}}></div>
-                  <span className='text-xs text-gray-500'>Oct</span>
-                </div>
-                <div className='flex flex-col items-center space-y-1 sm:space-y-2'>
-                  <div className='w-6 sm:w-8 bg-teal-500 rounded-t' style={{height: '65%'}}></div>
-                  <span className='text-xs text-gray-500'>Nov</span>
-                </div>
-                <div className='flex flex-col items-center space-y-1 sm:space-y-2'>
-                  <div className='w-6 sm:w-8 bg-teal-500 rounded-t' style={{height: '90%'}}></div>
-                  <span className='text-xs text-gray-500'>Dec</span>
-                </div>
-              </div> */}
                <div className='space-y-2 sm:space-y-3'>
-                {/* <Line data = {pieData}/> */}
+                <Line data = {lineData}/>
               </div>
             </div>
 
             {/* Recent Activity */}
             <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6'>
               <h3 className='text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4'>Recent Activity</h3>
-              <div className='space-y-3 sm:space-y-4'>
+              {/* <div className='space-y-3 sm:space-y-4'>
                 <div className='flex items-start space-x-2 sm:space-x-3'>
                   <div className='w-2 h-2 bg-green-500 rounded-full mt-1.5 sm:mt-2 flex-shrink-0'></div>
                   <div className='flex-1 min-w-0'>
@@ -237,7 +221,8 @@ const Dashboard = () => {
                     <p className='text-xs text-gray-400 mt-1'>7:50 PM</p>
                   </div>
                 </div>
-              </div>
+              </div> */}
+              
             </div>
           </div>
         </main>
