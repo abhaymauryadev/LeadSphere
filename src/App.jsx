@@ -18,6 +18,8 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/leads" element={<Leads />} />
+            <Route path="/leads/add" element={<AddLead />} />
+            <Route path="/leads/edit/:id" element={<AddLead />} />
             <Route path="/add-lead" element={<AddLead />} />
             <Route path="/ai-assistant" element={<AiAssistant />} />
             <Route path="/followups" element={<Followups />} />

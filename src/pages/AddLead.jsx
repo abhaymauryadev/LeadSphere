@@ -1,9 +1,11 @@
-import React, { useState, useRef } from 'react'
-import Sidebar from '../components/Sidebar'
-import { Download, Save } from 'lucide-react'
-import { createLead } from '../api/leads';
+import React, { useState, useRef,useEffect } from 'react';
+import { useParams ,useNavigate } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
+import { Download, Save } from 'lucide-react';
+import { createLead,updateLead, getLead } from '../api/leads';
 
 const AddLead = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('manual')
   const [formData, setFormData] = useState({
     firstName: '',
@@ -14,12 +16,37 @@ const AddLead = () => {
     jobTitle: '',
     source: '',
     tags: [],
-    notes: ''
+    notes: '',
+    date:'',
+    time:'',
   })
   const [newTag, setNewTag] = useState('')
   const [dragActive, setDragActive] = useState(false)
   const fileInputRef = useRef(null)
 
+  // update the pre-filled form data
+  const {id}  = useParams();
+
+  useEffect(() => {
+    if(id) {
+      (async() => {
+        try {
+          const data = await getLead(id);
+          setFormData({
+            ...data,
+            // Fix the date and time formatting
+            date: data.nextFollowup ? new Date(data.nextFollowup).toISOString().split("T")[0] : "",
+            time: data.nextFollowup ? new Date(data.nextFollowup).toTimeString().slice(0,5) : "",
+          });
+        } catch(err) {
+          console.error("Error fetching lead:", err);
+        }
+      })();
+    }
+  }, [id]);
+
+
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -91,26 +118,50 @@ const AddLead = () => {
     window.URL.revokeObjectURL(url)
   }
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    const savedLead = await createLead(formData);
-    alert(`Lead saved: ${savedLead.firstName} ${savedLead.lastName}`);
-    // Reset form
+    // ✅ Combine date + time into a single ISO string for MongoDB
+    let nextFollowup = null;
+    if (formData.date && formData.time) {
+      nextFollowup = new Date(`${formData.date}T${formData.time}`);
+    }
+
+    const leadPayload = {
+      ...formData,
+      nextFollowup, // send as Date to backend
+    };
+
+    if (id) {
+      // ✅ Update existing lead
+      await updateLead(id, leadPayload);
+      alert("Lead updated successfully");
+    } else {
+      // ✅ Create new lead
+      const savedLead = await createLead(leadPayload);
+      alert(`Lead created successfully: ${savedLead.firstName} ${savedLead.lastName}`);
+    }
+
+    // ✅ Redirect to leads table after save
+    navigate("/leads");
+
+    // ✅ Reset form after save
     setFormData({
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      company: '',
-      jobTitle: '',
-      source: '',
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      company: "",
+      jobTitle: "",
+      source: "",
       tags: [],
-      notes: ''
+      notes: "",
+      date: "",
+      time: "",
     });
   } catch (err) {
-    console.error('Error saving lead:', err);
-    alert('Failed to save lead');
+    console.error("Error saving lead:", err);
+    alert("Failed to save lead");
   }
 };
 
@@ -119,6 +170,18 @@ const AddLead = () => {
     console.log('Save and Score:', formData)
     // Handle save and score functionality here
   }
+
+  const setCurrentDateTime = () =>{
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0];
+    const currentTime = now.toLocaleString().slice(0,5);
+
+    setFormData(prev =>({
+      ...prev,
+      date:currentDate,
+      time:currentTime
+    }));
+  };
 
   return (
     <>
@@ -276,6 +339,41 @@ const AddLead = () => {
                     <option value='trade-show'>Trade Show</option>
                     <option value='other'>Other</option>
                   </select>
+                </div>
+
+
+                {/* Date*/}
+                <div>
+                  <label htmlFor="datetime" className="block text-sm font-medium text-gray-700 mb-2">
+                    Date
+                    </label>
+                    <div>
+                      <input
+                        type="date"
+                        id="date"
+                        name="date"
+                        value={formData.date}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"></input>
+                    </div>
+                </div>
+
+
+                {/* Time */}
+                <div>
+                  <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-2">
+                    Time
+                  </label>
+                  <div>
+                    <input type="time"
+                    id="time"
+                    name="time"
+                    value={formData.time}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"/>
+                  </div>
                 </div>
 
                 {/* Tags */}

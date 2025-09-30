@@ -20,9 +20,9 @@ const Header = () => {
               </div>
             </div>
             
-            <div className='flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4'>
+            <div className='flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-9'>
               {/* Search Bar */}
-              <div className='relative w-full sm:w-auto'>
+              <div className='relative w-full  sm:w-auto'>
                 <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' size={18} />
                 <input
                   type='text'

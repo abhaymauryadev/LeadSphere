@@ -16,13 +16,28 @@ export const getLead = async (id) => {
 
 // Create a new lead
 export const createLead = async (leadData) => {
-  const response = await axios.post(API_URL, leadData);
+  const payload = {
+    ...leadData,
+    // ✅ combine date + time into nextFollowup
+    ...(leadData.date && leadData.time && {
+      nextFollowup: new Date(`${leadData.date}T${leadData.time}`)
+    })
+  };
+
+  const response = await axios.post(API_URL, payload);
   return response.data;
 };
 
 // Update a lead
 export const updateLead = async (id, leadData) => {
-  const response = await axios.put(`${API_URL}/${id}`, leadData);
+  const payload = {
+    ...leadData,
+    ...(leadData.date && leadData.time && {
+      nextFollowup: new Date(`${leadData.date}T${leadData.time}`)
+    })
+  };
+
+  const response = await axios.put(`${API_URL}/${id}`, payload);
   return response.data;
 };
 

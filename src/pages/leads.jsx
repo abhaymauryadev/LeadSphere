@@ -1,18 +1,21 @@
-import React, { use, useEffect, useState } from 'react'
+import React, {  useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import Header from '../components/Header'
-import {getLeads } from '../api/leads'
+import {getLeads, updateLead, deleteLead } from '../api/leads'
 import { 
   Calendar,
   Filter,
   Tag,
   Phone,
-  MoreHorizontal
+  // MoreHorizontal
 } from 'lucide-react'
 
 const Leads = () => {
   const [LeadsData, setLeadsData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
 
   const [selectedDate, setSelectedDate] = useState('Last 3 Month')
   const [selectedSource, setSelectedSource] = useState('All Sources')
@@ -33,108 +36,26 @@ const Leads = () => {
     setLoading(false);
   },[])
 
-  // const leadsData = [
-  //   {
-  //     id: 1,
-  //     name: 'Sarah Johnson',
-  //     company: 'TechCorp Inc',
-  //     email: 'sarah.johnson@techcorp.com',
-  //     phone: '+1 (555) 123-4567',
-  //     source: 'LinkedIn',
-  //     jobTitle: 'Senior Software Engineer',
-  //     aiScore: { label: 'Hot', percentage: 85, color: 'bg-red-100 text-red-800' },
-  //     tags: ['React', 'TypeScript', '+1'],
-  //     status: 'Qualified',
-  //     nextFollowup: 'Dec 19, 3:30 PM',
-  //     avatar: 'SJ'
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'Michael Chen',
-  //     company: 'StartupXYZ',
-  //     email: 'mchen@startupxyz.com',
-  //     phone: '+1 (555) 987-6543',
-  //     source: 'Cold Email',
-  //     jobTitle: 'Product Manager',
-  //     aiScore: { label: 'Warm', percentage: 65, color: 'bg-orange-100 text-orange-800' },
-  //     tags: ['Product', 'Startup', '+1'],
-  //     status: 'Contacted',
-  //     nextFollowup: 'Dec 22, 10:00 AM',
-  //     avatar: 'MC'
-  //   },
-  //   {
-  //     id: 3,
-  //     name: 'Emily Rodriguez',
-  //     company: 'Design Studio Pro',
-  //     email: 'emily.r@designstudio.com',
-  //     phone: '+1 (555) 456-7890',
-  //     source: 'Manual',
-  //     jobTitle: 'UX Designer',
-  //     aiScore: { label: 'Cold', percentage: 35, color: 'bg-blue-100 text-blue-800' },
-  //     tags: ['Design', 'UX', '+1'],
-  //     status: 'New',
-  //     nextFollowup: 'Dec 20, 2:00 PM',
-  //     avatar: 'ER'
-  //   },
-  //   {
-  //     id: 4,
-  //     name: 'David Kim',
-  //     company: 'Independent Consultant',
-  //     email: 'david.kim@consultant.com',
-  //     phone: '+1 (555) 321-0987',
-  //     source: 'Cold Phone',
-  //     jobTitle: 'DevOps Engineer',
-  //     aiScore: { label: 'Hot', percentage: 78, color: 'bg-red-100 text-red-800' },
-  //     tags: ['DevOps', 'AWS', '+1'],
-  //     status: 'New',
-  //     nextFollowup: 'Dec 20, 2:00 PM',
-  //     avatar: 'DK'
-  //   },
-  //   {
-  //     id: 5,
-  //     name: 'Lisa Wang',
-  //     company: 'BigCorp Industries',
-  //     email: 'lisa.wang@bigcorp.com',
-  //     phone: '+1 (555) 654-3210',
-  //     source: 'LinkedIn',
-  //     jobTitle: 'Data Scientist',
-  //     aiScore: { label: 'Unscored', percentage: null, color: 'bg-gray-100 text-gray-800' },
-  //     tags: ['Data Science', 'Python', '+1'],
-  //     status: 'New',
-  //     nextFollowup: 'Dec 20, 2:00 PM',
-  //     avatar: 'LW'
-  //   },
+  
+  // Update and Delete rows
+  const handleUpdate = (lead) => {
+    navigate(`/leads/edit/${lead._id}`);
+  };
 
-  //   {
-  //     id: 6,
-  //     name: 'Askh Jain',  
-  //     company: 'Dynamics',
-  //     email: 'askh.jain@bigcorp.com',
-  //     phone: '+1 (555) 654-3210',
-  //     source: 'LinkedIn',
-  //     jobTitle: 'Product Manager',
-  //     aiScore: { label: 'Unscored', percentage: null, color: 'bg-gray-100 text-gray-800' },
-  //     tags: ['Product', 'Startup', '+1'],
-  //     status: 'New',
-  //     nextFollowup: 'Dec 20, 2:00 PM',
-  //     avatar: 'AJ'
-  //   },
-
-  //   {
-  //     id: 7,
-  //     name: 'Rajesh Kumar',  
-  //     company: 'Dynamics Inc',
-  //     email: 'rajesh.kumar@bigcorp.com',
-  //     phone: '+1 (555) 654-3210',
-  //     source: 'LinkedIn',
-  //     jobTitle: 'Product Manager',
-  //     aiScore: { label: 'Unscored', percentage: null, color: 'bg-gray-100 text-gray-800' },
-  //     tags: ['Product', 'Startup', '+1'],
-  //     status: 'New',
-  //     nextFollowup: 'Dec 20, 2:00 PM',
-  //     avatar: 'RK'
-  //   }
-  // ]
+  const handleDelete = async (leadId) => {
+    if (!window.confirm("Are you sure you want to delete this lead?")) return;
+  
+    try {
+      await deleteLead(leadId);
+  
+      // Remove from local state
+      setLeadsData(prev => prev.filter(l => l._id !== leadId));
+  
+      console.log(`Lead ${leadId} deleted`);
+    } catch (err) {
+      console.error("Error deleting lead:", err);
+    }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -143,7 +64,7 @@ const Leads = () => {
       case 'New': return 'bg-orange-100 text-orang-800'
       default: return 'bg-gray-100 text-gray-800'
     }
-  }
+  };
 
   if (loading) return <div className='p-6 text-center'>Loading Leads...</div>
   return (
@@ -224,14 +145,14 @@ const Leads = () => {
               </thead>
               <tbody className='bg-white divide-y divide-gray-200'>
                 {LeadsData.map((lead) => (
-                  <tr key={lead.id} className='hover:bg-gray-50 transition-colors'>
+                  <tr key={lead._id} className='hover:bg-gray-50 transition-colors'>
                     <td className='px-6 py-4 whitespace-nowrap'>
                       <div className='flex items-center'>
                         <div className='w-10 h-10 bg-teal-600 rounded-full flex items-center justify-center text-white font-semibold text-sm'>
-                          {lead.firstName[0]}{[][lead.lastName[0]]}
+                          {lead.firstName?.[0]}{lead.lastName?.[0]}
                         </div>
                         <div className='ml-4'>
-                          <div className='text-sm font-medium text-gray-900'>{lead.firstName}{lead.lastName}</div>
+                          <div className='text-sm font-medium text-gray-900'>{lead.firstName} {lead.lastName}</div>
                           <div className='text-sm text-gray-500'>{lead.company}</div>
                         </div>
                       </div>
@@ -269,12 +190,42 @@ const Leads = () => {
                       </span>
                     </td>
                     <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
-                      {lead.nextFollowup}
+                      {lead.nextFollowup
+                      ? new Date(lead.nextFollowup).toLocaleString([],{
+                        year: 'numeric',
+                        month:'short',
+                        day:'numeric',
+                        hour:'2-digit',
+                        minute:'2-digit',
+                      }): '-'}
                     </td>
                     <td className='px-6 py-4 whitespace-nowrap text-right text-sm font-medium'>
-                      <button className='text-gray-400 hover:text-gray-600 transition-colors'>
-                        <MoreHorizontal size={16} />
-                      </button>
+                      <DropdownMenu.Root>
+                        <DropdownMenu.Trigger asChild>
+                            <button className='text-gray-400 hover:text-gray-600 transition-colors'>
+                              <MoreHorizontal size={16} />
+                            </button>
+                        </DropdownMenu.Trigger>
+
+                        <DropdownMenu.Content 
+                        sideOffset={5}
+                        className='z-50 bg-white shadow-lg rounded-md p-1 w-32 '>
+                          
+                          {/* Update option */}
+                         <DropdownMenu.Item onClick={()=> handleUpdate(lead)}
+                          className='flex items-center gap-2 px-3 py-2 text-sm text-gray-700 border-none hover:bg-teal-600 hover:text-white hover:border-none cursor-pointer rounded-md'>
+                            <Pencil size={16} />
+                            Update
+                         </DropdownMenu.Item>
+
+                          {/* Delete option */}
+                         <DropdownMenu.Item onClick={()=> handleDelete(lead._id)}
+                          className='flex items-center gap-2 px-3 py-2 text-sm text-gray-700 border-none hover:bg-red-600  hover:text-white hover:border-none cursor-pointer rounded-md'>
+                            <Trash size={16} />
+                            Delete
+                         </DropdownMenu.Item>
+                        </DropdownMenu.Content>
+                      </DropdownMenu.Root>
                     </td>
                   </tr>
                 ))}
