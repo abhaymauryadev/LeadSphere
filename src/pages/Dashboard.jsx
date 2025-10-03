@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { getDashboardStats } from '../api/dashboard'
 import { getActivities } from '../api/activities';
+import { getMonthlyLeadsCount } from '../api/leads';
 import Header from '../components/Header'
 import {Pie, Line, Bar} from 'react-chartjs-2'
+import { Link } from 'react-router-dom'
 import { 
   Users,
   Flame,
@@ -46,6 +48,7 @@ const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [activitiesData, setActivitiesData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
+  
 
   // Activities
   useEffect(() => {
@@ -71,6 +74,16 @@ const Dashboard = () => {
       }
     };
     fetchStats();
+  }, []);
+
+  const [data, setData] = useState({ count: 0, month: "", year: "" });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await getMonthlyLeadsCount();
+      setData(res);
+    };
+    fetchData();
   }, []);
 
   if (!stats) return <div className='p-6'>Loading dashboard...</div>
@@ -158,8 +171,12 @@ const Dashboard = () => {
     ],
   };
 
+
+
+
+
   const renderOverview = () => (
-    <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6'>
+    <div className=' grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 h-[27rem]'>
       {/* Lead Sources */}
       <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6'>
         <h3 className='text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4'>Lead Sources</h3>
@@ -169,7 +186,7 @@ const Dashboard = () => {
       </div>
 
       {/* Lead Timeline */}
-      <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6'>
+      <div className='bg-white rounded-lg shadow-sm border h-[27rem]  border-gray-200 p-3 sm:p-4 lg:p-6'>
         <h3 className='text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4'>Lead Timeline</h3>
         <div className='space-y-2 sm:space-y-3'>
           <Line data={lineData} />
@@ -177,7 +194,7 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Activity */}
-      <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6'>
+      <div className='bg-white rounded-lg shadow-sm border h-[27rem] border-gray-200 p-3 sm:p-4 lg:p-6 overflow-y-scroll'>
         <h3 className='text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4'>Recent Activity</h3>
         <div className="space-y-3 sm:space-y-4">
           {!activitiesData ? (
@@ -547,11 +564,13 @@ const Dashboard = () => {
             <div className='flex items-center justify-between'>
               <div className='flex-1 min-w-0'>
                 <p className='text-gray-600 text-xs sm:text-sm font-medium'>New This Month</p>
-                <p className='text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 mt-1 sm:mt-2'>43</p>
-                <p className='text-gray-500 text-xs sm:text-sm mt-1'>December 2024</p>
+                <p className='text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 mt-1 sm:mt-2'>{data.count}</p>
+                <p className='text-gray-500 text-xs sm:text-sm mt-1'>{data.month} {data.year}</p>
               </div>
               <div className='p-2 sm:p-3 bg-green-100 rounded-lg ml-2 sm:ml-4 flex-shrink-0'>
+                <Link to="/add-lead">
                 <Plus className='text-green-600' size={16} />
+                </Link>
               </div>
             </div>
           </div>
